@@ -1,0 +1,27 @@
+From: 42mypark <skyttl34@gmail.com>
+Subject: [PATCH] edit EXTRAVERSION of kernel
+
+for assignment02 of little-penguin in 42
+
+Signed-off-by: 42mypark <skyttl34@gmail.com>
+
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 460716314fb3..ebca37ab5779 100644
+--- a/Makefile
++++ b/Makefile
+@@ -2,7 +2,7 @@
+ VERSION = 6
+ PATCHLEVEL = 2
+ SUBLEVEL = 0
+-EXTRAVERSION = -rc3
++EXTRAVERSION = -thor_kernel
+ NAME = Hurr durr I'ma ninja sloth
+ 
+ # *DOCUMENTATION*
+-- 
+2.37.2
+

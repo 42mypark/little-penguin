@@ -1,0 +1,3 @@
+# AUTHOR: MYPARK
+ACTION=="remove", ENV{ID_MODEL}=="QEMU_USB_Keyboard",  RUN+="/sbin/modprobe -r keyboard_mod"
+

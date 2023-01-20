@@ -1,0 +1,5 @@
+
+# AUTHOR: MYPARK
+
+#SUBSYSTEM=="usb", ACTION=="add", ATTR{idVendor}=="0x0627", ATTR{idProduct}=="0x0001" RUN+="/sbin/modprobe keyboard_mod"
+SUBSYSTEM=="usb", ACTION=="add", ENV{ID_MODEL}=="QEMU_USB_Keyboard", ENV{ID_MODEL_ID}=="0001", RUN+="/sbin/modprobe keyboard_mod"

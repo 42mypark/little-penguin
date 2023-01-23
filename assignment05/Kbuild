@@ -1,0 +1,2 @@
+obj-m = misc_mod.o
+

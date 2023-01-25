@@ -19,19 +19,15 @@ void print_result(int ret, const char *tag, char *buf) {
 	errno = 0;
 }
 
-
-int main(int argc, char **argv) {
+void test_sinario1(const char *filename) {
 	int fd;
 	int error;
 	int size;
 	char buf[100];
 
-	if (argc != 2) {
-		printf("check arguments!\n");
-		return 1;
-	}
 
-	fd = open(argv[1], O_RDWR);
+	printf("\n*****TEST: %s*****\n", filename);
+	fd = open(filename, O_RDWR);
 	if (fd < 0)
 		err(1, "open failed");
 	printf("open called: fd: %d\n", fd);
@@ -52,5 +48,57 @@ int main(int argc, char **argv) {
 	if (error < 0)
 		err(1, "close failed");
 	printf("close called\n");
-		
+}
+
+void test_sinario2(const char *filename) {
+	int fd;
+	int error;
+	int w_size;
+	int r_size;
+	char w_buf[100] = {0};
+	char r_buf[100] = {0};
+
+	memset(w_buf, 'a', 10);
+	memset(w_buf + 10, 'b', 10);
+
+
+
+	printf("\n*****TEST: %s*****\n", filename);
+	fd = open(filename, O_RDWR);
+	if (fd < 0)
+		err(1, "open failed");
+	printf("open called: fd: %d\n", fd);
+
+	w_size += write(fd, w_buf, 6);
+	print_result(w_size, "[write]", w_buf);
+	w_buf[w_size] = 'a';
+
+	w_size += write(fd, w_buf + w_size, 10);
+	print_result(w_size, "[write]", w_buf);
+
+	r_size = read(fd, r_buf, 12);
+	print_result(r_size, "[read]", r_buf);
+
+	r_size = read(fd, r_buf, 4);
+	print_result(r_size, "[read]", r_buf);
+
+	error = close(fd);
+	if (error < 0)
+		err(1, "close failed");
+	printf("close called\n");
+}
+
+
+int main() {
+	char *files[] = {
+		"/sys/kernel/debug/fortytwo/id",
+		"/sys/kernel/debug/fortytwo/jiffies",
+		"/sys/kernel/debug/fortytwo/foo",
+	};
+
+	for (int i = 0; i < 2 ; i++) {
+		test_sinario1(files[i]);
+	}
+	
+	test_sinario2(files[2]);
 }

@@ -3,74 +3,102 @@
 #include <linux/fs.h>
 #include <linux/slab.h>
 #include <linux/mm.h>
+#include <linux/debugfs.h>
 #include <linux/spinlock_types.h>
+
+#define FOO_NAME "foo"
+#define FOO_MODE 0644
 
 MODULE_LICENSE("GPL");
 
-// lock ? 
+extern struct dentry* fortytwo_dir;
 
+static size_t num;
 static long long int w_pos;
-struct dentry *foo_dentry;
-void *foo_storage;
+static struct dentry *foo_dentry;
+static void *foo_storage;
 DEFINE_SPINLOCK(lock);
 
 ssize_t foo_read(struct file *file, char __user *buf, size_t len, loff_t *ppos) {
-	int error, move;
-
-	pr_info("foo_read called\n");
-
-	move = *ppos + len  <= w_pos ? len : w_pos - *ppos;
+	int error;
 
 	spin_lock(&lock);
-	error = copy_to_user(buf, foo_storage + *ppos, move);
+
+	pr_info("foo_read: num-%zu\n", *(size_t *)file->private_data);
+	len = *ppos + len  <= w_pos ? len : w_pos - *ppos;
+	error = copy_to_user(buf, foo_storage + *ppos, len);
+	len -= error;
+	*ppos += len;
+	pr_info("foo_read: num-%zu\n", *(size_t *)file->private_data);
 	spin_unlock(&lock);
 
-	move = len - error;
-	*ppos += move;
+	pr_info("foo_read: pos: %lld\n",*ppos);
 
-	pr_info("\tpos: %lld\n", *ppos);
-
-	return move;
+	return len;
 }
 
 ssize_t foo_write(struct file *file, const char __user *buf, size_t len, loff_t *ppos) {
-	int error, move;
+	int error;
 
-	pr_info("foo_write called\n");
-
-	if (w_pos == PAGE_SIZE)
-		return -ENOSPC;
-
-	move = w_pos + len <= PAGE_SIZE ? len : PAGE_SIZE - w_pos;
+	pr_info("foo_write:\n");
+	pr_info("\tb:w_pos: %lld\n", w_pos);
 
 	spin_lock(&lock);
-	error = __copy_from_user(foo_storage + w_pos, buf, move);
+	if (w_pos == PAGE_SIZE) {
+		spin_unlock(&lock);
+		return -ENOSPC;
+	}
+	len = w_pos + len <= PAGE_SIZE ? len : PAGE_SIZE - w_pos;
+	error = __copy_from_user(foo_storage + w_pos, buf, len);
+	len -= error;
+	w_pos += len;
 	spin_unlock(&lock);
 
-	move = len - error;
-	w_pos += move;
+	pr_info("\ta:w_pos: %lld\n", w_pos);
 
-	pr_info("\tw_pos: %lld\n", w_pos);
-
-	return move;
+	return len;
 }
 
 int foo_open(struct inode *inode, struct file *file) {
-	pr_info("foo_open called\n");
+	file->private_data = kmalloc(sizeof(size_t), GFP_USER);
+	spin_lock(&lock);
+	pr_info("foo_open: w_pos: %lld\n", w_pos);
+	*(size_t *)file->private_data = num;
+	num++;
+	spin_unlock(&lock);
 	return 0;
 }
 
 int foo_release(struct inode *inode, struct file *file) {
-	pr_info("foo_release called\n");
+	spin_lock(&lock);
+	pr_info("foo_release: w_pos: %lld, pos: %lld\n", w_pos, file->f_pos);
+	spin_unlock(&lock);
 	return 0;
 }
 
-const struct file_operations foo_fops = {
+static const struct file_operations foo_fops = {
 	.owner		= THIS_MODULE,
 	.read		= foo_read,
 	.write		= foo_write,
 	.open		= foo_open,
 	.release	= foo_release,
 };
+
+int foo_init(void) {
+	foo_dentry = debugfs_create_file(FOO_NAME, FOO_MODE, fortytwo_dir, NULL, &foo_fops);
+	if (!foo_dentry) {
+		pr_info("debugfs_create_file: %s: failed", FOO_NAME);
+		return -EAGAIN;
+	}
+
+	foo_storage = kmalloc(PAGE_SIZE, GFP_USER);
+	if (!foo_storage)
+		return -ENOMEM;
+	return 0;
+}
+
+void foo_exit(void) {
+	kfree(foo_storage);
+}
 
 

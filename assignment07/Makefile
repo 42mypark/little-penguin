@@ -1,5 +1,7 @@
-TEST_SRC	:= test.c
-TEST		:= test
+TEST_DIR	:= tests
+TEST_SRC	:= test_main.c test_utils.c test_id.c test_jiffies.c  test_foo.c
+TEST_SRC_POS	:= $(addprefix $(TEST_DIR)/, $(TEST_SRC))
+TEST_NAME	:= test
 RM		:= rm -rfv
 
 all:
@@ -10,6 +12,10 @@ clean:
 install:
 	$(MAKE) -C /lib/modules/$(shell uname -r)/build/ M=$(PWD) modules_install
 
-$(TEST): $(TEST_SRC)
-	$(CC) $(TEST_SRC) -o $(TEST)
+$(TEST_NAME): $(TEST_SRC_POS)
+	$(CC) $^ -o $@ -I $(TEST_DIR)
+
+.PHONY: all clean install
+
+	
 

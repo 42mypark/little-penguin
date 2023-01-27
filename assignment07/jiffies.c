@@ -2,12 +2,18 @@
 #include <linux/kernel.h>
 #include <linux/fs.h>
 #include <linux/jiffies.h>
+#include <linux/debugfs.h>
 
 #define JIFFIES_LEN_MAX 10
+#define JIFFIES_NAME "jiffies"
+#define JIFFIES_MODE 0444
 
 MODULE_LICENSE("GPL");
 
-void jiffies_to_buf(unsigned long js, char *buf) {
+extern struct dentry *fortytwo_dir;
+static struct dentry *jiffies_dentry;
+
+static void jiffies_to_buf(unsigned long js, char *buf) {
 	for (int d = JIFFIES_LEN_MAX - 1; d >= 0; --d) {
 		buf[d] = '0' + js % 10;
 		js /= 10;
@@ -19,19 +25,14 @@ ssize_t jiffies_read(struct file *file, char __user *buf, size_t len, loff_t *of
 	unsigned long js = jiffies;
 	char js_buf[JIFFIES_LEN_MAX] = {0};
 
-	(void)file;
-	(void)offset;
 	pr_info("jiffies_read called\n");
-	pr_info("\tjiffies = %lu, len = %zu", js, len);
 
 	if (len < JIFFIES_LEN_MAX)
 		return -EINVAL;
 
 	jiffies_to_buf(js, js_buf);
-	error = copy_to_user(buf, js_buf, JIFFIES_LEN_MAX); // 입력으로 받은 buf가 제대로 된 주소인지?
-	if (error)
-		return JIFFIES_LEN_MAX - error;
-	return JIFFIES_LEN_MAX;
+	error = copy_to_user(buf, js_buf, JIFFIES_LEN_MAX);
+	return JIFFIES_LEN_MAX - error;
 }
 
 ssize_t jiffies_write(struct file *file, const char __user *buf, size_t len, loff_t *offset) {
@@ -57,5 +58,15 @@ const struct file_operations jiffies_fops = {
 	.release	= jiffies_release,
 };
 
-struct dentry *jiffies_dentry;
+
+int jiffies_init(void) {
+	jiffies_dentry = debugfs_create_file(JIFFIES_NAME, JIFFIES_MODE, fortytwo_dir, NULL, &jiffies_fops);
+	if (!jiffies_dentry) {
+		pr_info("debugfs_create_file: %s: failed", JIFFIES_NAME);
+		return -EAGAIN;
+	}
+	return 0;
+}
+
+
 

@@ -5,10 +5,15 @@
 #include <linux/miscdevice.h>
 #include <linux/fs.h>
 #include <linux/slab.h>
+#include <linux/spinlock_types.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Louis Solofrizzo <louis@ne02ptzero.me>");
-MODULE_DESCRIPTION("Useless module");
+MODULE_DESCRIPTION("revserse string.");
+
+static char str[PAGE_SIZE];
+static loff_t w_pos;
+DEFINE_SPINLOCK(str_lock);
 
 static ssize_t myfd_read(struct file *fp, char __user *user, size_t size, loff_t *offs);
 static ssize_t myfd_write(struct file *fp, const char __user *user, size_t size, loff_t *offs);
@@ -25,18 +30,14 @@ static struct miscdevice myfd_device = {
 	.fops = &myfd_fops
 };
 
-static char str[PAGE_SIZE];
-static char *tmp;
 
 int __init myfd_init(void)
 {
-	tmp = kmalloc(sizeof(char) * PAGE_SIZE, GFP_KERNEL);
 	return misc_register(&myfd_device);
 }
 
 void __exit myfd_cleanup(void)
 {
-	kfree(tmp);
 }
 
 /*
@@ -44,14 +45,24 @@ void __exit myfd_cleanup(void)
  */
 ssize_t myfd_read(struct file *fp, char __user *user, size_t size, loff_t *offs)
 {
-	size_t t, i;
-	ssize_t ret;
+	size_t i, s;
+	ssize_t ret, len;
+	char *tmp;
 
-	len = strlen(str);
+	spin_lock(&str_lock);
+	len = w_pos - *offs;
+	s = sizeof(char) * len;
+	tmp = kmalloc(s, GFP_KERNEL);
+	if (tmp) {
+		spin_unlock(&str_lock);
+		return -ENOMEM;
+	}
 	for (i = 0; i < len; i++)
 		tmp[i] = str[len - 1 - i];
+	spin_unlock(&str_lock);
 	tmp[len] = 0;
-	ret = simple_read_from_buffer(user, size, offs, tmp, i);
+	ret = simple_read_from_buffer(user, size, offs, tmp, len);
+	kfree(tmp);
 	return ret;
 }
 
@@ -59,10 +70,14 @@ ssize_t myfd_write(struct file *fp, const char __user *user, size_t size, loff_t
 {
 	ssize_t res;
 
-	if (size >= PAGE_SIZE)
+	spin_lock(&str_lock);
+	if (size + w_pos >= PAGE_SIZE) {
+		spin_unlock(&str_lock);
 		return -EINVAL;
-	res = simple_write_to_buffer(str, size, offs, user, size);
-	str[res] = 0;
+	}
+	res = simple_write_to_buffer(str + w_pos, size, &w_pos, user, size);
+	str[w_pos] = 0;
+	spin_unlock(&str_lock);
 	return res;
 }
 

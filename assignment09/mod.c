@@ -51,8 +51,6 @@ int mymnt_init(void)
 	GET_SYMBOL("mounts_op", mnt_op);
 	GET_SYMBOL("put_mnt_ns", myput_mnt_ns);
 	GET_SYMBOL("mnt_cursor_del", mymnt_cursor_del);
-//	GET_SYMBOL("show_type", myshow_type);
-//	GET_SYMBOL("mangle", mymangle);
 	GET_SYMBOL("seq_path_root", myseq_path_root);
 
 	entry = proc_create("mymounts", 0444, NULL, &mymnt_proc_ops);

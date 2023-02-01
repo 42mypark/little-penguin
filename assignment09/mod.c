@@ -18,21 +18,17 @@
 	if (!err) 			\
 		return -EINVAL;		\
 	VAL = (typeof(VAL))err;		\
-}					\
-
+}					
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("");
 
-typedef int (*fop_func_t)(struct inode*, struct file*);
-
 struct proc_dir_entry *entry;
 struct seq_operations *mnt_op;
+
 void (*myput_mnt_ns)(struct mnt_namespace *ns);
 void (*mymnt_cursor_del)(struct mnt_namespace *ns, struct mount *cursor);
 int  (*myseq_path_root)(struct seq_file*, struct path*, struct path*, const char*);
-
-
 unsigned long (*find_symbols)(const char *);
 
 int mymnt_init(void)

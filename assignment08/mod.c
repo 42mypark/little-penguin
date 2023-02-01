@@ -40,9 +40,6 @@ void __exit myfd_cleanup(void)
 {
 }
 
-/*
- * Malloc like a boss
- */
 ssize_t myfd_read(struct file *fp, char __user *user, size_t size, loff_t *offs)
 {
 	size_t i, s;
@@ -52,6 +49,8 @@ ssize_t myfd_read(struct file *fp, char __user *user, size_t size, loff_t *offs)
 	spin_lock(&str_lock);
 	len = w_pos - *offs;
 	s = sizeof(char) * len;
+
+	/* Malloc like a boss  */
 	tmp = kmalloc(s, GFP_KERNEL);
 	if (tmp) {
 		spin_unlock(&str_lock);
@@ -60,6 +59,7 @@ ssize_t myfd_read(struct file *fp, char __user *user, size_t size, loff_t *offs)
 	for (i = 0; i < len; i++)
 		tmp[i] = str[len - 1 - i];
 	spin_unlock(&str_lock);
+
 	tmp[len] = 0;
 	ret = simple_read_from_buffer(user, size, offs, tmp, len);
 	kfree(tmp);

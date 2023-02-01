@@ -1,5 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0+
 #include <linux/module.h>
-#include <linux/kernel.h>
 #include <linux/fs.h>
 #include <linux/slab.h>
 #include <linux/mm.h>

@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: GPL-3.0+ */
 #ifndef MYMNT_H
 #define MYMNT_H
 

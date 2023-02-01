@@ -2,34 +2,33 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
-#include <linux/fs.h>
-#include <linux/slab.h>
-#include <linux/spinlock_types.h>
 #include <linux/seq_file.h>
 #include <linux/proc_fs.h>
 #include <linux/kprobes.h>
 #include <linux/mnt_namespace.h>
+
 #include <../fs/mount.h>
+
 #include "mymnt.h"
 
 #define GET_SYMBOL(NAME, VAL)  {	\
-	unsigned long long  err;	\
+	unsigned long long err;		\
 	err = find_symbols(NAME);	\
-	if (!err) 			\
+	if (!err)			\
 		return -EINVAL;		\
 	VAL = (typeof(VAL))err;		\
-}					
+}
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("");
 
-struct proc_dir_entry *entry;
+static struct proc_dir_entry *entry;
 struct seq_operations *mnt_op;
 
 void (*myput_mnt_ns)(struct mnt_namespace *ns);
 void (*mymnt_cursor_del)(struct mnt_namespace *ns, struct mount *cursor);
-int  (*myseq_path_root)(struct seq_file*, struct path*, struct path*, const char*);
-unsigned long (*find_symbols)(const char *);
+int  (*myseq_path_root)(struct seq_file *s, struct path *p, struct path *r, const char *c);
+unsigned long (*find_symbols)(const char *s);
 
 int mymnt_init(void)
 {

@@ -1,27 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0+
-#include <linux/module.h>
-#include <linux/kernel.h>
-#include <linux/init.h>
-#include <linux/fs.h>
-#include <linux/slab.h>
-#include <linux/spinlock_types.h>
 #include <linux/seq_file.h>
 #include <linux/proc_fs.h>
 #include <linux/fs_struct.h>
 #include <linux/sched.h>
 #include <linux/nsproxy.h>
 #include <linux/mnt_namespace.h>
-#include <linux/pid.h>
 
 #include <../fs/internal.h>
 #include <../fs/mount.h>
 
-extern struct seq_operations *mnt_op;
-extern void (*myput_mnt_ns)(struct mnt_namespace *ns);
-extern void (*mymnt_cursor_del)(struct mnt_namespace *ns, struct mount *cursor);
-extern void (*myshow_type)(struct seq_file*, struct super_block *);
-extern void (*mymangle)(struct seq_file*, const char*);
-extern int (*myseq_path_root)(struct seq_file*, struct path*, struct path*, const char*);
+#include "exported_symbols.h"
 
 static int mymnt_proc_show(struct seq_file *seq, struct vfsmount *vmnt)
 {
@@ -57,7 +45,7 @@ static int get_properties(struct inode *inode, struct mnt_namespace **ns, struct
 	nsp = task->nsproxy;
 	if (!nsp || !nsp->mnt_ns)
 		goto cleanup_task;
-	if(!task->fs)
+	if (!task->fs)
 		goto err_fs;
 	*ns = nsp->mnt_ns;
 	get_mnt_ns(*ns);             // cleanup when release
@@ -79,7 +67,7 @@ static int mymnt_proc_open(struct inode *inode, struct file *file)
 	struct proc_mounts *pm;
 	struct seq_file *sf;
 
-	struct mnt_namespace* ns;
+	struct mnt_namespace *ns;
 	struct path root;
 
 	err = get_properties(inode, &ns, &root);

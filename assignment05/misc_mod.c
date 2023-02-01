@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0+
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -11,7 +12,6 @@ MODULE_LICENSE("GPL");
 
 ssize_t mymisc_read(struct file *, char __user *buf, size_t len, loff_t *ppos)
 {
-	pr_info("mymisc_read called\n");
 	return simple_read_from_buffer(buf, len, ppos,  LOGIN, LOGIN_LEN);
 }
 
@@ -29,24 +29,10 @@ ssize_t mymisc_write(struct file *, const char __user *buf, size_t len, loff_t *
 	return LOGIN_LEN;
 }
 
-int mymisc_open(struct inode *inode, struct file *file)
-{
-	pr_info("mymisc_open called\n");
-	return 0;
-}
-
-int mymisc_release(struct inode *inode, struct file *file)
-{
-	pr_info("mymisc_release called\n");
-	return 0;
-}
-
 static const struct file_operations mymisc_fops = {
 	.owner		= THIS_MODULE,
 	.read		= mymisc_read,
 	.write		= mymisc_write,
-	.open		= mymisc_open,
-	.release	= mymisc_release,
 };
 
 static struct miscdevice misc_dev = {
@@ -61,7 +47,7 @@ int __init init_mymisc(void)
 {
 	int err;
 
-	pr_info("Hello misc ! \n");
+	pr_info("Hello misc !\n");
 	err = misc_register(&misc_dev);
 	if (err) {
 		pr_info("misc_register failed\n");

@@ -1,3 +1,2 @@
-obj-m := learn_debugfs.o
-learn_debugfs-y := mod.o jiffies.o id.o foo.o
-
+obj-m := ft_debugfs.o
+ft_debugfs-y := mod.o jiffies.o id.o foo.o

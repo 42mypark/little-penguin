@@ -2,4 +2,3 @@
 *.mod
 modules*
 Module.symvers
-*.o

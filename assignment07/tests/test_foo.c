@@ -46,7 +46,8 @@ void test_permission(void) {
 	print_result_open(fd, "O_DIRECTORY");
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_EXCL);
 	print_result_open(fd, "O_EXCL");
-
+	
+	errno = 0;
 	setuid(0);
 }
 

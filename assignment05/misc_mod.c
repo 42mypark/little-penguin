@@ -9,22 +9,19 @@
 
 MODULE_LICENSE("GPL");
 
-ssize_t mymisc_read(struct file *file, char __user *buf, size_t, loff_t *offset) {
-	int error;
-
-	(void)file;
-	(void)offset;
+ssize_t mymisc_read(struct file *, char __user *buf, size_t len, loff_t *ppos)
+{
 	pr_info("mymisc_read called\n");
-	error = copy_to_user(buf, LOGIN, LOGIN_LEN);
-	return LOGIN_LEN - error;
+	return simple_read_from_buffer(buf, len, ppos,  LOGIN, LOGIN_LEN);
 }
 
-ssize_t mymisc_write(struct file *file, const char __user *buf, size_t, loff_t *offset) {
-	char kbuf[6] = {0};
+ssize_t mymisc_write(struct file *, const char __user *buf, size_t len, loff_t *ppos)
+{
+	char kbuf[LOGIN_LEN] = {0};
 	int error;
 
-	pr_info("mymisc_write called\n");
-	error = __copy_from_user(kbuf, buf, LOGIN_LEN);
+	len = len <= LOGIN_LEN ? len : LOGIN_LEN;
+	error = __copy_from_user(kbuf, buf, len);
 	if (error)
 		return -EAGAIN;
 	if (strncmp(kbuf, LOGIN, LOGIN_LEN))
@@ -32,12 +29,14 @@ ssize_t mymisc_write(struct file *file, const char __user *buf, size_t, loff_t *
 	return LOGIN_LEN;
 }
 
-int mymisc_open(struct inode *inode, struct file *file) {
+int mymisc_open(struct inode *inode, struct file *file)
+{
 	pr_info("mymisc_open called\n");
 	return 0;
 }
 
-int mymisc_release(struct inode *inode, struct file *file) {
+int mymisc_release(struct inode *inode, struct file *file)
+{
 	pr_info("mymisc_release called\n");
 	return 0;
 }
@@ -50,7 +49,7 @@ static const struct file_operations mymisc_fops = {
 	.release	= mymisc_release,
 };
 
-struct miscdevice misc_dev = {
+static struct miscdevice misc_dev = {
 	.minor = MISC_DYNAMIC_MINOR,
 	.name = "fortytwo",
 	.fops = &mymisc_fops,
@@ -58,7 +57,8 @@ struct miscdevice misc_dev = {
 	.mode = 0644,
 };
 
-int __init init_mymisc(void) {
+int __init init_mymisc(void)
+{
 	int err;
 
 	pr_info("Hello misc ! \n");
@@ -71,7 +71,8 @@ int __init init_mymisc(void) {
 	return 0;
 }
 
-void __exit cleanup_mymisc(void) {
+void __exit cleanup_mymisc(void)
+{
 	misc_deregister(&misc_dev);
 	pr_info("Cleanning up misc.\n");
 }

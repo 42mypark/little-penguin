@@ -11,7 +11,7 @@ void test_foo();
 
 int main(void) {
 
-//	test_id();
-//	test_jiffies();
+	test_id();
+	test_jiffies();
 	test_foo();
 }

@@ -20,7 +20,7 @@ static void jiffies_to_buf(unsigned long js, char *buf) {
 	}
 }
 
-ssize_t jiffies_read(struct file *file, char __user *buf, size_t len, loff_t *offset) {
+ssize_t jiffies_read(struct file *, char __user *buf, size_t len, loff_t *) {
 	int error;
 	unsigned long js = jiffies;
 	char js_buf[JIFFIES_LEN_MAX] = {0};
@@ -33,11 +33,6 @@ ssize_t jiffies_read(struct file *file, char __user *buf, size_t len, loff_t *of
 	jiffies_to_buf(js, js_buf);
 	error = copy_to_user(buf, js_buf, JIFFIES_LEN_MAX);
 	return JIFFIES_LEN_MAX - error;
-}
-
-ssize_t jiffies_write(struct file *file, const char __user *buf, size_t len, loff_t *offset) {
-	pr_info("jiffies_write called\n");
-	return 0;
 }
 
 int jiffies_open(struct inode *inode, struct file *file) {
@@ -53,7 +48,6 @@ int jiffies_release(struct inode *inode, struct file *file) {
 const struct file_operations jiffies_fops = {
 	.owner		= THIS_MODULE,
 	.read		= jiffies_read,
-	.write		= jiffies_write,
 	.open		= jiffies_open,
 	.release	= jiffies_release,
 };

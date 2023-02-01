@@ -13,17 +13,12 @@ MODULE_LICENSE("GPL");
 extern struct dentry *fortytwo_dir;
 static struct dentry *id_dentry;
 
-ssize_t id_read(struct file *, char __user *buf, size_t len, loff_t *) {
-	int error;
-
+ssize_t id_read(struct file *, char __user *buf, size_t len, loff_t *ppos) {
 	pr_info("id_read called\n");
-	if (len < LOGIN_LEN)
-		return -EINVAL;
-	error = copy_to_user(buf, LOGIN, LOGIN_LEN);
-	return LOGIN_LEN - error;
+	return simple_read_from_buffer(buf, len, ppos, LOGIN, LOGIN_LEN);
 }
 
-ssize_t id_write(struct file *file, const char __user *buf, size_t len, loff_t *offset) {
+ssize_t id_write(struct file *file, const char __user *buf, size_t len, loff_t *) {
 	char kbuf[LOGIN_LEN] = {0};
 	int error;
 

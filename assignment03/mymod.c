@@ -16,7 +16,7 @@ void do_work(int my_int, int *retval)
 		mdelay(10);
 
 	if (y > 10) {
-	/* That was a long sleep, tell userspace about it */
+		/* That was a long sleep, tell userspace about it */
 		pr_info("We slept a long time!");
 	}
 	*retval = i * y;

@@ -1,4 +1,4 @@
-NAME=learn_debugfs.ko
+NAME=ft_debugfs.ko
 
 rmmod $NAME
 insmod $NAME

@@ -1,0 +1,2 @@
+obj-m := mymounts.o
+mymounts-y := mod.o mymnt.o

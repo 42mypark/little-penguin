@@ -5,6 +5,9 @@
 #include <errno.h>
 #include <string.h>
 #include <pthread.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
 #include "test_utils.h"
 
 #define PAGE_SIZE 1 << 12
@@ -24,31 +27,38 @@ void test_permission(void) {
 	int fd, c;
 
 	printf("\n*****Test foo: Permission*****\n");
-	read(1, &c, 1);
 
 	setuid(1000);
 
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_RDONLY);
 	print_result_open(fd, "O_RDONLY");
+	close(fd);
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_WRONLY);
 	print_result_open(fd, "O_WRONLY");
+	close(fd);
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_RDWR);
 	print_result_open(fd, "O_RDWR");
+	close(fd);
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_APPEND);
 	print_result_open(fd, "O_APPEND");
+	close(fd);
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_CREAT);
 	print_result_open(fd, "O_CREAT");
+	close(fd);
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_ASYNC);
 	print_result_open(fd, "O_ASYNC");
+	close(fd);
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_NONBLOCK);
 	print_result_open(fd, "O_NONBLOCK");
+	close(fd);
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_DIRECTORY);
 	print_result_open(fd, "O_DIRECTORY");
+	close(fd);
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_EXCL);
 	print_result_open(fd, "O_EXCL");
+	close(fd);
 	
-	errno = 0;
-	setuid(0);
+	exit(0);
 }
 
 void test_write() {
@@ -60,6 +70,7 @@ void test_write() {
 
 
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_RDWR);
+	printf("\nfd: %d\n", fd);
 	ret = write(fd, "0123456789", 10);
 	print_result_write(ret);
 
@@ -97,7 +108,6 @@ void test_nospec() {
 	
 	printf("\n*****Test foo: NOSPEC*****\n");
 	read(1, &c, 1);
-
 
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_RDWR);
 
@@ -147,8 +157,17 @@ void test_spinlock() {
 
 
 void test_foo(void) {
+	int ws;
+	int pid;
 
-	test_permission();
+	printf("\n*****Test foo*****\n");
+	read(1, &ws, 1);
+
+	pid = fork();
+	if (pid == 0) 
+		test_permission();
+	else 
+		wait(&ws);
 	test_write();
 	test_read();
 	test_nospec();

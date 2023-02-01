@@ -7,7 +7,7 @@
 #define LOGIN "mypark"
 #define LOGIN_LEN 6
 
-MODULE_LICENSE("MYPARK");
+MODULE_LICENSE("GPL");
 
 ssize_t mymisc_read(struct file *file, char __user *buf, size_t, loff_t *offset) {
 	int error;
@@ -16,9 +16,7 @@ ssize_t mymisc_read(struct file *file, char __user *buf, size_t, loff_t *offset)
 	(void)offset;
 	pr_info("mymisc_read called\n");
 	error = copy_to_user(buf, LOGIN, LOGIN_LEN);
-	if (error)
-		return LOGIN_LEN - error;
-	return LOGIN_LEN;
+	return LOGIN_LEN - error;
 }
 
 ssize_t mymisc_write(struct file *file, const char __user *buf, size_t, loff_t *offset) {
@@ -60,8 +58,7 @@ struct miscdevice misc_dev = {
 	.mode = 0644,
 };
 
-
-int init_mymisc(void) {
+int __init init_mymisc(void) {
 	int err;
 
 	pr_info("Hello misc ! \n");
@@ -74,7 +71,7 @@ int init_mymisc(void) {
 	return 0;
 }
 
-void cleanup_mymisc(void) {
+void __exit cleanup_mymisc(void) {
 	misc_deregister(&misc_dev);
 	pr_info("Cleanning up misc.\n");
 }

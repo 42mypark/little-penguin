@@ -13,3 +13,5 @@ install:
 $(TEST): $(TEST_SRC)
 	$(CC) $(TEST_SRC) -o $(TEST)
 
+.PHONY: all clean install
+

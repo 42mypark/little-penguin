@@ -2,7 +2,7 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 
-MODULE_LICENSE("MYPARK");
+MODULE_LICENSE("GPL");
 
 int init_module(void) {
 	printk(KERN_INFO "Hello world !\n");

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0+
 #include <stdio.h>
 #include <errno.h>
 #include <err.h>
@@ -5,7 +6,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-int start_test(const char *filename, int flags) {
+int start_test(const char *filename, int flags)
+{
 	int fd;
 
 	printf("\n*****TEST: %s*****\n", filename);
@@ -15,7 +17,8 @@ int start_test(const char *filename, int flags) {
 	return fd;
 }
 
-void end_test(int fd) {
+void end_test(int fd)
+{
 	int error;
 
 	error = close(fd);
@@ -24,21 +27,23 @@ void end_test(int fd) {
 	printf("close called\n");
 }
 
-void print_result_read(int ret, char *buf) {
-	if (ret < 0) 
+void print_result_read(int ret, char *buf)
+{
+	if (ret < 0)
 		buf[0] = 0;
 	else
 		buf[ret] = 0;
 
 	printf("[read]\n");
-	printf("\tsize: %d\n",ret);
+	printf("\tsize: %d\n", ret);
 	printf("\tcontent: %s\n", buf);
 	printf("\tmsg: %s\n", strerror(errno));
 
 	errno = 0;
 }
 
-void print_result_write(int ret) {
+void print_result_write(int ret)
+{
 	printf("[write]\n");
 	printf("\tsize: %d\n", ret);
 	printf("\tmsg: %s\n", strerror(errno));

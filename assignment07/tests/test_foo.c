@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0+
 #include <unistd.h>
 #include <fcntl.h>
 #include <err.h>
@@ -10,9 +11,10 @@
 #include <sys/wait.h>
 #include "test_utils.h"
 
-#define PAGE_SIZE 1 << 12
+#define PAGE_SIZE (1 << 12)
 
-static void print_result_open(int fd, char *flag) {
+static void print_result_open(int fd, char *flag)
+{
 	static int c;
 
 	printf("#%d: %s\n", c++, flag);
@@ -23,7 +25,8 @@ static void print_result_open(int fd, char *flag) {
 	errno = 0;
 }
 
-void test_permission(void) {
+void test_permission(void)
+{
 	int fd, c;
 
 	printf("\n*****Test foo: Permission*****\n");
@@ -57,14 +60,15 @@ void test_permission(void) {
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_EXCL);
 	print_result_open(fd, "O_EXCL");
 	close(fd);
-	
+
 	exit(0);
 }
 
-void test_write() {
+void test_write(void)
+{
 	int fd, ret, c;
 	char buf[100] = {0};
-	
+
 	printf("\n*****Test foo: Write*****\n");
 	read(1, &c, 1);
 
@@ -80,10 +84,11 @@ void test_write() {
 	close(fd);
 }
 
-void test_read() {
+void test_read(void)
+{
 	int fd, ret, c;
 	char buf[100] = {0};
-	
+
 	printf("\n*****Test foo: Read*****\n");
 	read(1, &c, 1);
 
@@ -102,10 +107,11 @@ void test_read() {
 	close(fd);
 }
 
-void test_nospec() {
+void test_nospec(void)
+{
 	int fd, ret, c;
 	char buf[PAGE_SIZE] = {'a'};
-	
+
 	printf("\n*****Test foo: NOSPEC*****\n");
 	read(1, &c, 1);
 
@@ -125,38 +131,41 @@ void test_nospec() {
 
 }
 
-void *child(void *arg) {
+void *child(void *arg)
+{
 	int fd, ret;
 	char buf[10];
-	
+
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_RDWR);
 
-	for (int i = 0; i < (PAGE_SIZE / 4); i++) {
+	for (int i = 0; i < (PAGE_SIZE / 4); i++)
 		ret = read(fd, buf, 4);
-	}
+
 	close(fd);
 	return NULL;
 }
 
-void test_spinlock() {
+void test_spinlock(void)
+{
 	int c;
+
 	printf("\n*****Test foo: spinlock*****\n");
 	read(1, &c, 1);
 
 	pthread_t tids[10];
 
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 10; i++)
 		pthread_create(&tids[i], NULL, child, NULL);
-	}
 
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 10; i++)
 		pthread_join(tids[i], NULL);
-	}
+
 	printf("\n*****Test foo: spinlock DONE*****\n");
 }
 
 
-void test_foo(void) {
+void test_foo(void)
+{
 	int ws;
 	int pid;
 
@@ -164,9 +173,9 @@ void test_foo(void) {
 	read(1, &ws, 1);
 
 	pid = fork();
-	if (pid == 0) 
+	if (pid == 0)
 		test_permission();
-	else 
+	else
 		wait(&ws);
 	test_write();
 	test_read();

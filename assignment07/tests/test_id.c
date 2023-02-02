@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0+
 #include <unistd.h>
 #include <fcntl.h>
 #include <err.h>
@@ -6,7 +7,8 @@
 #include <string.h>
 #include "test_utils.h"
 
-void test_id() {
+void test_id(void)
+{
 	int fd;
 	int error;
 	int ret;
@@ -27,7 +29,7 @@ void test_id() {
 
 	ret = read(fd, buf, 6);
 	print_result_read(ret, buf);
-	
+
 	ret = read(fd, buf, 10);
 	print_result_read(ret, buf);
 

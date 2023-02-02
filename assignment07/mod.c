@@ -11,15 +11,16 @@
 
 MODULE_LICENSE("GPL");
 
-struct dentry *fortytwo_dir = NULL;
+struct dentry *fortytwo_dir;
 
-int init_learn_debugfs(void) {
+int init_learn_debugfs(void)
+{
 	int error;
 
-	pr_info("Hello learn_debugfs !\n");	
+	pr_info("Hello learn_debugfs !\n");
 
 	fortytwo_dir = debugfs_create_dir(FT_DIRNAME, NULL);
-	if (!fortytwo_dir){
+	if (!fortytwo_dir) {
 		pr_info("debugfs_create_dir: %s: failed", FT_DIRNAME);
 		return -EAGAIN;
 	}
@@ -35,11 +36,11 @@ int init_learn_debugfs(void) {
 	error = foo_init();
 	if (error)
 		return error;
-	
 	return 0;
 }
 
-void cleanup_learn_debugfs(void) {
+void cleanup_learn_debugfs(void)
+{
 	foo_exit();
 	debugfs_remove_recursive(fortytwo_dir);
 	pr_info("Cleanning up learn_debugfs.\n");

@@ -5,42 +5,44 @@
 #include <linux/mm.h>
 #include <linux/debugfs.h>
 #include <linux/spinlock_types.h>
+#include "parent_dir.h"
 
 #define FOO_NAME "foo"
 #define FOO_MODE 0644
 
 MODULE_LICENSE("GPL");
 
-extern struct dentry* fortytwo_dir;
 
 static size_t num;
-static long long int w_pos;
+static long long w_pos;
 static struct dentry *foo_dentry;
 static void *foo_storage;
 DEFINE_SPINLOCK(lock);
 
-ssize_t foo_read(struct file *file, char __user *buf, size_t len, loff_t *ppos) {
+ssize_t foo_read(struct file *file, char __user *buf, size_t len, loff_t *ppos)
+{
 	int error;
 
 	spin_lock(&lock);
 
-	pr_info("foo_read: num-%zu\n", *(size_t *)file->private_data);
+	pr_info("read: num-%zu\n", *(size_t *)file->private_data);
 	len = *ppos + len  <= w_pos ? len : w_pos - *ppos;
 	error = copy_to_user(buf, foo_storage + *ppos, len);
 	len -= error;
 	*ppos += len;
-	pr_info("foo_read: num-%zu\n", *(size_t *)file->private_data);
+	pr_info("read: num-%zu\n", *(size_t *)file->private_data);
 	spin_unlock(&lock);
 
-	pr_info("foo_read: pos: %lld\n",*ppos);
+	pr_info("read: pos: %lld\n", *ppos);
 
 	return len;
 }
 
-ssize_t foo_write(struct file *file, const char __user *buf, size_t len, loff_t *ppos) {
+ssize_t foo_write(struct file *file, const char __user *buf, size_t len, loff_t *ppos)
+{
 	int error;
 
-	pr_info("foo_write:\n");
+	pr_info("write:\n");
 	pr_info("\tb:w_pos: %lld\n", w_pos);
 
 	spin_lock(&lock);
@@ -59,19 +61,21 @@ ssize_t foo_write(struct file *file, const char __user *buf, size_t len, loff_t 
 	return len;
 }
 
-int foo_open(struct inode *inode, struct file *file) {
+int foo_open(struct inode *inode, struct file *file)
+{
 	file->private_data = kmalloc(sizeof(size_t), GFP_USER);
 	spin_lock(&lock);
-	pr_info("foo_open: w_pos: %lld\n", w_pos);
+	pr_info("open: w_pos: %lld\n", w_pos);
 	*(size_t *)file->private_data = num;
 	num++;
 	spin_unlock(&lock);
 	return 0;
 }
 
-int foo_release(struct inode *inode, struct file *file) {
+int foo_release(struct inode *inode, struct file *file)
+{
 	spin_lock(&lock);
-	pr_info("foo_release: w_pos: %lld, pos: %lld\n", w_pos, file->f_pos);
+	pr_info("release: w_pos: %lld, pos: %lld\n", w_pos, file->f_pos);
 	spin_unlock(&lock);
 	return 0;
 }
@@ -84,7 +88,8 @@ static const struct file_operations foo_fops = {
 	.release	= foo_release,
 };
 
-int foo_init(void) {
+int foo_init(void)
+{
 	foo_dentry = debugfs_create_file(FOO_NAME, FOO_MODE, fortytwo_dir, NULL, &foo_fops);
 	if (!foo_dentry) {
 		pr_info("debugfs_create_file: %s: failed", FOO_NAME);
@@ -97,7 +102,8 @@ int foo_init(void) {
 	return 0;
 }
 
-void foo_exit(void) {
+void foo_exit(void)
+{
 	kfree(foo_storage);
 }
 

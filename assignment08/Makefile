@@ -12,6 +12,3 @@ $(TEST_NAME): $(TEST_SRC_POS)
 	$(CC) $^ -o $@ -I $(TEST_DIR)
 
 .PHONY: all clean install
-
-	
-

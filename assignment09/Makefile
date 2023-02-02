@@ -9,6 +9,3 @@ install:
 	$(MAKE) -C /lib/modules/$(shell uname -r)/build/ M=$(PWD) modules_install
 
 .PHONY: all clean install
-
-	
-

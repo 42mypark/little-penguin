@@ -9,7 +9,6 @@
 
 int main(void)
 {
-
 	test_id();
 	test_jiffies();
 	test_foo();

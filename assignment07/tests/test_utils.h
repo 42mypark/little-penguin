@@ -8,5 +8,3 @@ void end_test(int fd);
 void print_result_write(int ret);
 
 #endif
-
-

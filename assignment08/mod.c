@@ -30,7 +30,6 @@ static struct miscdevice myfd_device = {
 	.fops = &myfd_fops
 };
 
-
 int __init myfd_init(void)
 {
 	return misc_register(&myfd_device);
@@ -38,6 +37,7 @@ int __init myfd_init(void)
 
 void __exit myfd_cleanup(void)
 {
+	misc_deregister(&myfd_device);
 }
 
 ssize_t myfd_read(struct file *fp, char __user *user, size_t size, loff_t *offs)
@@ -52,7 +52,7 @@ ssize_t myfd_read(struct file *fp, char __user *user, size_t size, loff_t *offs)
 
 	/* Malloc like a boss  */
 	tmp = kmalloc(s, GFP_KERNEL);
-	if (tmp) {
+	if (!tmp) {
 		spin_unlock(&str_lock);
 		return -ENOMEM;
 	}

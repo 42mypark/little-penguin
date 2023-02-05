@@ -6,17 +6,17 @@
 #include <linux/debugfs.h>
 #include "parent_dir.h"
 
-#define JIFFIES_LEN_MAX 10
-#define JIFFIES_NAME "jiffies"
-#define JIFFIES_MODE 0444
+#define LEN_MAX 10
+#define NAME "jiffies"
+#define MODE 0444
 
 MODULE_LICENSE("GPL");
 
-static struct dentry *jiffies_dentry;
+static struct dentry *jiffies_d;
 
 static void jiffies_to_buf(unsigned long js, char *buf)
 {
-	for (int d = JIFFIES_LEN_MAX - 1; d >= 0; --d) {
+	for (int d = LEN_MAX - 1; d >= 0; --d) {
 		buf[d] = '0' + js % 10;
 		js /= 10;
 	}
@@ -26,9 +26,9 @@ ssize_t jiffies_read(struct file *, char __user *buf, size_t len, loff_t *)
 {
 	int error;
 	unsigned long js = jiffies;
-	char js_buf[JIFFIES_LEN_MAX] = {0};
+	char js_buf[LEN_MAX] = {0};
 
-	if (len < JIFFIES_LEN_MAX)
+	if (len < LEN_MAX)
 		return -EINVAL;
 
 	jiffies_to_buf(js, js_buf);
@@ -41,16 +41,12 @@ const struct file_operations jiffies_fops = {
 	.read		= jiffies_read,
 };
 
-
 int jiffies_init(void)
 {
-	jiffies_dentry = debugfs_create_file(JIFFIES_NAME, JIFFIES_MODE, fortytwo_dir, NULL, &jiffies_fops);
+	jiffies_d = debugfs_create_file(NAME, MODE, fortytwo_dir, NULL, &jiffies_fops);
 	if (!jiffies_dentry) {
 		pr_info("debugfs_create_file: %s: failed", JIFFIES_NAME);
 		return -EAGAIN;
 	}
 	return 0;
 }
-
-
-

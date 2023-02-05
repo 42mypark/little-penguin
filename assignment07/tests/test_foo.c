@@ -72,7 +72,6 @@ void test_write(void)
 	printf("\n*****Test foo: Write*****\n");
 	read(1, &c, 1);
 
-
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_RDWR);
 	printf("\nfd: %d\n", fd);
 	ret = write(fd, "0123456789", 10);
@@ -91,7 +90,6 @@ void test_read(void)
 
 	printf("\n*****Test foo: Read*****\n");
 	read(1, &c, 1);
-
 
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_RDWR);
 
@@ -126,9 +124,7 @@ void test_nospec(void)
 	ret = write(fd, buf, 0);
 	print_result_write(ret);
 
-
 	close(fd);
-
 }
 
 void *child(void *arg)
@@ -162,7 +158,6 @@ void test_spinlock(void)
 
 	printf("\n*****Test foo: spinlock DONE*****\n");
 }
-
 
 void test_foo(void)
 {

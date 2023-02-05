@@ -12,7 +12,6 @@
 
 MODULE_LICENSE("GPL");
 
-
 static size_t num;
 static long long w_pos;
 static struct dentry *foo_dentry;
@@ -106,5 +105,3 @@ void foo_exit(void)
 {
 	kfree(foo_storage);
 }
-
-

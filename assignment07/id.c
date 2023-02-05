@@ -39,7 +39,6 @@ static const struct file_operations id_fops = {
 	.write		= id_write,
 };
 
-
 int id_init(void)
 {
 	id_dentry = debugfs_create_file(ID_NAME, ID_MODE, fortytwo_dir, NULL, &id_fops);
@@ -49,4 +48,3 @@ int id_init(void)
 	}
 	return 0;
 }
-

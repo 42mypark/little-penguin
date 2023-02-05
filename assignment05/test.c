@@ -27,7 +27,6 @@ int ft_open(void)
 	return fd;
 }
 
-
 int main(void)
 {
 	int fd;
@@ -45,7 +44,6 @@ int main(void)
 		printf("\tcontent: %s\n", buf);
 
 		ft_close(fd);
-
 	}
 
 	{
@@ -80,5 +78,4 @@ int main(void)
 
 		ft_close(fd);
 	}
-
 }

@@ -48,5 +48,3 @@ void cleanup_learn_debugfs(void)
 
 module_init(init_learn_debugfs);
 module_exit(cleanup_learn_debugfs);
-
-

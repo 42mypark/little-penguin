@@ -62,6 +62,8 @@ ssize_t foo_write(struct file *file, const char __user *buf, size_t len, loff_t 
 
 int foo_open(struct inode *inode, struct file *file)
 {
+	if (file->f_flags & (O_APPEND | O_CREAT))
+		return -EINVAL;
 	file->private_data = kmalloc(sizeof(size_t), GFP_USER);
 	spin_lock(&lock);
 	pr_info("open: w_pos: %lld\n", w_pos);

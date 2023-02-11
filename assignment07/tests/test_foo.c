@@ -35,31 +35,22 @@ void test_permission(void)
 
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_RDONLY);
 	print_result_open(fd, "O_RDONLY");
-	close(fd);
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_WRONLY);
 	print_result_open(fd, "O_WRONLY");
-	close(fd);
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_RDWR);
 	print_result_open(fd, "O_RDWR");
-	close(fd);
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_APPEND);
 	print_result_open(fd, "O_APPEND");
-	close(fd);
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_CREAT);
 	print_result_open(fd, "O_CREAT");
-	close(fd);
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_ASYNC);
 	print_result_open(fd, "O_ASYNC");
-	close(fd);
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_NONBLOCK);
 	print_result_open(fd, "O_NONBLOCK");
-	close(fd);
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_DIRECTORY);
 	print_result_open(fd, "O_DIRECTORY");
-	close(fd);
 	fd = open("/sys/kernel/debug/fortytwo/foo", O_EXCL);
 	print_result_open(fd, "O_EXCL");
-	close(fd);
 
 	exit(0);
 }

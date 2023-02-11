@@ -32,8 +32,8 @@ ssize_t jiffies_read(struct file *, char __user *buf, size_t len, loff_t *)
 		return -EINVAL;
 
 	jiffies_to_buf(js, js_buf);
-	error = copy_to_user(buf, js_buf, JIFFIES_LEN_MAX);
-	return JIFFIES_LEN_MAX - error;
+	error = copy_to_user(buf, js_buf, LEN_MAX);
+	return LEN_MAX - error;
 }
 
 const struct file_operations jiffies_fops = {
@@ -44,8 +44,8 @@ const struct file_operations jiffies_fops = {
 int jiffies_init(void)
 {
 	jiffies_d = debugfs_create_file(NAME, MODE, fortytwo_dir, NULL, &jiffies_fops);
-	if (!jiffies_dentry) {
-		pr_info("debugfs_create_file: %s: failed", JIFFIES_NAME);
+	if (!jiffies_d) {
+		pr_info("debugfs_create_file: %s: failed", NAME);
 		return -EAGAIN;
 	}
 	return 0;

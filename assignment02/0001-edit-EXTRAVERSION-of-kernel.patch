@@ -20,8 +20,7 @@ index 460716314fb3..ebca37ab5779 100644
 -EXTRAVERSION = -rc3
 +EXTRAVERSION = -thor_kernel
  NAME = Hurr durr I'ma ninja sloth
- 
  # *DOCUMENTATION*
--- 
+--
 2.37.2
 

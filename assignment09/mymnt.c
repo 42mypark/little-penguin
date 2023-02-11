@@ -19,7 +19,6 @@ static int mymnt_proc_show(struct seq_file *seq, struct vfsmount *vmnt)
 	struct path mnt_path = { .dentry = vmnt->mnt_root, .mnt = vmnt };
 	int err = 0;
 
-
 	seq_puts(seq, sb->s_type->name);
 	seq_puts(seq, ": ");
 	seq_puts(seq, mnt->mnt_devname ? mnt->mnt_devname : "none");
@@ -59,7 +58,6 @@ cleanup_task:
 ret:
 	return ret;
 }
-
 
 static int mymnt_proc_open(struct inode *inode, struct file *file)
 {
@@ -101,7 +99,7 @@ static int mymnt_proc_release(struct inode *inode, struct file *file)
 	return seq_release_private(inode, file);
 }
 
-// simliar with fops
+// similar with fops
 const struct proc_ops mymnt_proc_ops = {
 	.proc_open = mymnt_proc_open,
 	.proc_read = seq_read,

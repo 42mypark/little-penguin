@@ -10,7 +10,7 @@
 - build a extra version of linux kernel named with 'thor_kernel'.
 - commit the above changes and make it a patch.
 
-### Assignment 03
+### Assignment 03 & 08
 - fix the given code to conform linux kernel coding style.
 
 ### Assignment 04
@@ -20,3 +20,10 @@
 - make a simple misc device driver.
 - implement the read and write functions.
 - the misc device node should show up in /dev/fortytwo.
+
+### Assignment 07
+- learn what debugfs is and how to use it.
+
+### Assignment 09
+- learn procfs, mountpoint, directory listing, etc...
+

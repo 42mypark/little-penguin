@@ -1,6 +1,6 @@
 # I-want-to-be-a-penguine
 
-I learned about linux kernel ecosystem, linux kernel module programing, and others.
+I learned about linux kernel ecosystem, linux kernel module programming, and others.
 
 ### Assignment 00
 - build a local version of linux kernel named with your nickname.

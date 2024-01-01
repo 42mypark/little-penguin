@@ -1,4 +1,4 @@
-# I-want-to-be-a-penguine
+# Little-penguin
 
 I learned about linux kernel ecosystem, linux kernel module programming, and others.
 

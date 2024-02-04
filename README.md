@@ -19,7 +19,7 @@ I learned about linux kernel ecosystem, linux kernel module programming, and oth
 - detect a usb keyboard and load a simple keyboard module automatically with udev.
 
 ### Assignment 05
-- make a simple misc device driver.
+- create a simple misc device driver.
 - implement the read and write functions.
 - the misc device node should show up in /dev/fortytwo.
 

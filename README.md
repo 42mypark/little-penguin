@@ -6,7 +6,7 @@ I learned about linux kernel ecosystem, linux kernel module programming, and oth
 - build a local version of linux kernel named with your nickname.
 
 ### Assignment 01
-- make a 'hello world' kernel module.
+- create a 'hello world' kernel module.
 
 ### Assignment 02
 - build a extra version of linux kernel named with 'thor_kernel'.
